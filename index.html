@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Draggable Image slider</title>
+	<!--fontawesome-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+<style>
+	body{
+		width:100%;
+		min-height:100vh;
+		padding:0 10px;
+		display:flex;
+		justify-content:center;
+		align-items: center;
+		background:grey;
+		box-sizing:border-box;
+	}
+	.wrapper{
+		max-width:1200px;
+	}
+	.wrapper .arrowLeft{
+		display:none;
+	}
+	.wrapper .carousel{
+		font-size:0px;
+		white-space:nowrap; /*讓空?元素不換行*/
+		cursor:pointer;
+		overflow:hidden;
+		scroll-behavior:smooth;/*滑順*/
+	}
+	 .carousel.dragging{
+	 	cursor:grab;
+	 	scroll-behavior:auto;
+	 }
+	 .carousel.dragging img{
+	 	pointer-events:none;
+	 }
+    .carousel img{
+    	object-fit:cover;
+    	width:calc(100% / 3);
+    	height:340px;
+    	margin-left:12px;
+    }
+.carousel img:first-child{ 
+	margin-left:2px;
+
+}
+.arrowRight{
+	width:40px;
+	height:40px;
+	position:absolute;
+	right:10px;
+	top:300px;
+	cursor: pointer;
+}
+.arrow::before{
+	background:white;
+}
+.arrowLeft{
+	transform:rotate(180deg);
+  	width:40px;
+	height:40px;
+	position:absolute;
+	left:30px;
+	top:300px;
+	cursor:pointer;
+}
+
+</style>
+<body>
+	<div class="wrapper">
+		<img id="left" class="arrow arrowLeft" src="./img/arrow.svg" alt="">
+		<img id="right" class="arrow arrowRight" src="./img/arrow.svg" alt="">
+		
+		<div class="carousel">
+			
+			<img src="https://images.unsplash.com/photo-1589652717521-10c0d092dea9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGNvbXB1dGVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60" alt="">
+			<img src="https://images.unsplash.com/photo-1572705824045-3dd0c9a47945?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8c3R5bGV8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60" alt="">
+			<img src="https://plus.unsplash.com/premium_photo-1671653975964-b05bb64ca05e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGFuY2FrZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60" alt="">
+			<img src="https://images.unsplash.com/file-1676662332627-a87c3ce6709cimage?dpr=2&auto=format&fit=crop&w=416&q=60" alt="">
+			<img src="https://tse3.mm.bing.net/th?id=OIP.w5saE68YcrjJhORC_ph1uQHaEo&pid=Api&P=0" alt="">
+			<img src="https://tse3.mm.bing.net/th?id=OIP.KE_ZpY1osUGY7YLfHN1vsAHaEK&pid=Api&P=0" alt="">
+		</div>
+	</div>
+
+
+
+
+	<script>
+		const carousel = document.querySelector(".carousel")
+
+		let isDragStart = false, prevPageX, prevScrollLeft;
+		let arrowIcon = document.querySelectorAll(".arrow")
+		let firstImg = carousel.querySelectorAll("img")[0];
+		let firstImgWidth = firstImg.clientWidth + 16; //取得第一個圖片加上左margin 14 px
+ 		let scrollWidth = carousel.scrollWidth - carousel.clientWidth; //取得scroll的總距離
+
+
+ 		const showHideIcon = ()=>{
+ 			arrowIcon[0].style.display= carousel.scrollLeft ==0 ? "none":"block";
+ 			arrowIcon[1].style.display= carousel.scrollLeft == scrollWidth ? "none":"block";
+ 		}
+
+		arrowIcon.forEach(icon=>{
+			icon.addEventListener("click",()=>{
+				console.log(icon)
+				carousel.scrollLeft += icon.id=="left"? -firstImgWidth:firstImgWidth;
+			setTimeout(()=>showHideIcon(),60);
+			})
+		})
+
+
+		const dragStart = (e)=>{
+			//updataing blobal variables value on mouse down event
+			isDragStart = true;
+			prevPageX = e.pageX; //滑鼠點擊距離
+			console.log( "dragStart" + prevPageX)
+			prevScrollLeft = carousel.scrollLeft; //卷軸移動距離 起始0
+		}
+
+		const dragging =(e)=>{
+			//scrolling images/ carousel to left according to mouse pointer
+			if(!isDragStart) return;
+			e.preventDefault();
+			carousel.classList.add("dragging");
+			let positionDiff = e.pageX - prevPageX; //本次點擊位置減去前次點擊位置
+			carousel.scrollLeft = prevScrollLeft - positionDiff;
+			showHideIcon();
+			
+		}
+		
+		const dragStop = ()=>{
+			isDragStart= false;
+			carousel.classList.remove("dragging")
+		}
+
+
+		carousel.addEventListener("mousedown", dragStart)//滑鼠點擊下去觸發
+		carousel.addEventListener("mousemove", dragging)//滑鼠滑入範圍觸發
+		carousel.addEventListener("mouseup", dragStop)//點擊中的滑鼠"放開"觸發
+		
+		
+		
+
+
+	</script>
+</body>
+</html>
