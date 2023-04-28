@@ -142,7 +142,10 @@
 		carousel.addEventListener("mousemove", dragging)//滑鼠滑入範圍觸發
 		carousel.addEventListener("mouseup", dragStop)//點擊中的滑鼠"放開"觸發
 		
-		
+		//新增touch事件
+		carousel.addEventListener("touchstart", dragStart)//手指觸碰螢幕
+		carousel.addEventListener("touchmove", dragging)//手指滑動元素
+		carousel.addEventListener("touchend", dragStop)//手指離開螢幕
 		
 
 
